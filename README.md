@@ -1,3 +1,14 @@
+# Docker
+
+To run the server with docker, execute:
+
+```
+sbt docker:publishLocal
+docker run --rm -p8080:8080 graphql-example:0.1.0-SNAPSHOT
+```
+
+Then open [http://localhost:8080](http://localhost:8080)
+
 # graphql-example
 
 An example [GraphQL](https://graphql.org) server written with [akka-http](https://github.com/akka/akka-http), [circe](https://github.com/circe/circe) and [sangria](https://github.com/sangria-graphql/sangria).

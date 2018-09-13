@@ -23,3 +23,6 @@ libraryDependencies ++= Seq(
 
 Revolver.settings
 enablePlugins(JavaAppPackaging)
+enablePlugins(DockerPlugin)
+
+mainClass in Compile := Some("Server")

@@ -15,7 +15,7 @@ class TrayRepo {
   import TrayRepo._
 
   def getWorkflow(id: Int): Option[Workflow] =
-    workflows.find(c ⇒ c.id == id)
+    workflows.find(c => c.id == id)
 
   def getWorkflowExecution(id: Int): Option[WorkflowExecution] =
     workflowExecutions.find(c => c.id == id)

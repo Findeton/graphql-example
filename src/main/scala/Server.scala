@@ -21,6 +21,7 @@ import scala.util.{Failure, Success}
 import GraphQLRequestUnmarshaller._
 import sangria.slowlog.SlowLog
 
+
 object Server extends App with CorsSupport {
   implicit val system = ActorSystem("sangria-server")
   implicit val materializer = ActorMaterializer()
