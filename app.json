@@ -1,0 +1,7 @@
+{
+  "name": "GraphQL Example",
+  "description": "An example GraphQL server written with akka-http and sangria.",
+  "repository": "https://github.com/Findeton/graphql-example",
+  "logo": "",
+  "keywords": ["scala", "sangria", "graphql"]
+}
