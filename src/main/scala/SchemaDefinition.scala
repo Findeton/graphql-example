@@ -8,7 +8,7 @@ import scala.concurrent.Future
  */
 object SchemaDefinition {
   /**
-    * Resolves the lists of characters. These resolutions are batched and
+    * Resolves the lists of workflows. These resolutions are batched and
     * cached for the duration of a query.
     */
   val workflows = Fetcher.caching(
@@ -20,6 +20,10 @@ object SchemaDefinition {
       )
   )(HasId(_.id))
 
+  /**
+    * Resolves the lists of workflow executions. These resolutions are batched and
+    * cached for the duration of a query.
+    */
   val workflowExecutions = Fetcher.caching(
     (ctx: TrayRepo, ids: Seq[Int]) =>
       Future.successful(
@@ -32,39 +36,44 @@ object SchemaDefinition {
   val Workflow: ObjectType[TrayRepo, Workflow] =
     ObjectType(
       "Workflow",
-      "A character in the Star Wars Trilogy",
+      "A Workflow",
       () => fields[TrayRepo, Workflow](
         Field("id", IntType,
-          Some("The id of the character."),
+          Some("id of the workflow"),
           resolve = _.value.id),
         Field("steps", OptionType(IntType),
-          Some("The name of the character."),
+          Some("number of steps of the workflow"),
           resolve = _.value.steps))
       )
 
   val WorkflowExecution: ObjectType[TrayRepo, WorkflowExecution] =
     ObjectType(
       "WorkflowExecution",
-      "A character in the Star Wars Trilogy",
+      "A WorkflowExecution",
       () => fields[TrayRepo, WorkflowExecution](
         Field("id", IntType,
-          Some("The id of the character."),
+          Some("id of the execution"),
           resolve = _.value.id),
         Field("workflow", OptionType(IntType),
-          Some("The name of the character."),
+          Some("id of the workflow"),
           resolve = _.value.workflow),
         Field("stepIndex", OptionType(IntType),
-          Some("The name of the character."),
+          Some("step index of the workflow execution"),
           resolve = _.value.stepIndex),
         Field("timestamp", OptionType(StringType),
-          Some("The name of the character."),
+          Some("timestamp"),
           resolve = _.value.timestamp.toString))
       )
 
   val ID = Argument("id", IntType, description = "id of the workflow/execution")
-  val Steps = Argument("steps", IntType, description = "id of the workflow/execution")
+  val Steps = Argument("steps", IntType, description = "number of steps of the workflow")
+
   val LimitArg = Argument("limit", OptionInputType(IntType), defaultValue = 20)
   val OffsetArg = Argument("offset", OptionInputType(IntType), defaultValue = 0)
+
+  val WorkflowArg = Argument("workflow", IntType, description = "id of the workflow")
+  val StepIndex = Argument("stepIndex", IntType, description = "step index of the workflow execution")
+  val Timestamp = Argument("timestamp", StringType, description = "timestamp")
 
   val Query = ObjectType(
     "Query", fields[TrayRepo, Unit](
@@ -85,7 +94,10 @@ object SchemaDefinition {
   val MutationType = ObjectType("Mutation", fields[TrayRepo, Unit](
     Field("addWorkflow", OptionType(Workflow),
       arguments = ID :: Steps :: Nil,
-      resolve = ctx => ctx.ctx.addWorkflow(ctx arg ID, ctx arg Steps))
+      resolve = ctx => ctx.ctx.addWorkflow(ctx arg ID, ctx arg Steps)),
+    Field("addWorkflowExecution", OptionType(WorkflowExecution),
+      arguments = ID :: WorkflowArg :: StepIndex :: Timestamp :: Nil,
+      resolve = ctx => ctx.ctx.addWorkflowExecution(ctx arg ID, ctx arg WorkflowArg, ctx arg StepIndex, ctx arg Timestamp))
   ))
 
   val TrayIoSchema = Schema(Query, Some(MutationType))

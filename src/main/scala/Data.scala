@@ -18,7 +18,7 @@ class TrayRepo {
     workflows.find(c ⇒ c.id == id)
 
   def getWorkflowExecution(id: Int): Option[WorkflowExecution] =
-    workflowExecutions.find(c ⇒ c.id == id)
+    workflowExecutions.find(c => c.id == id)
 
   def getWorkflows(limit: Int, offset: Int): List[Workflow] = 
     workflows.drop(offset).take(limit)
@@ -28,7 +28,18 @@ class TrayRepo {
 
   def addWorkflow(id: Int, steps: Int): Option[Workflow] = {
     workflows = workflows :+ Workflow(id, steps)
-    workflows.find(c ⇒ c.id == id)
+    workflows.find(c => c.id == id)
+  }
+
+  def addWorkflowExecution(
+    id: Int,
+    workflow: Int,
+    stepIndex: Int,
+    timestamp: String)
+  : Option[WorkflowExecution] = {
+    val we = WorkflowExecution(id, workflow, stepIndex, Timestamp.valueOf(timestamp))
+    workflowExecutions = workflowExecutions :+ we
+    workflowExecutions.find(c => c.id == id)
   }
 }
 
@@ -40,7 +51,7 @@ object TrayRepo {
     Workflow(
       id = 1,
       steps = 1))
-   val workflowExecutions = List(
+   var workflowExecutions = List(
      WorkflowExecution(
       id = 0,
       workflow = 0,

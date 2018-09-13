@@ -41,6 +41,33 @@ class SchemaSpec extends WordSpec with Matchers {
         """).right.get)
     }
 
+    "list workflows" in {
+      val query =
+        graphql"""
+         query listWorkflows {
+           workflows {
+             id
+           }
+         }
+      """
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "workflows": [
+              {
+                "id": 0
+              },
+              {
+                "id": 1
+              }
+            ]
+          }
+        }
+        """).right.get)
+    }
+
     "find a workflow execution" in {
       val query =
         graphql"""
@@ -62,6 +89,33 @@ class SchemaSpec extends WordSpec with Matchers {
               "workflow": 0,
               "stepIndex": 0
             }
+          }
+        }
+        """).right.get)
+    }
+
+    "list workflowExecutions" in {
+      val query =
+        graphql"""
+         query listWorkflows {
+           workflowExecutions {
+             id
+           }
+         }
+      """
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "workflowExecutions": [
+              {
+                "id": 0
+              },
+              {
+                "id": 1
+              }
+            ]
           }
         }
         """).right.get)
@@ -107,6 +161,82 @@ class SchemaSpec extends WordSpec with Matchers {
             "workflow": {
               "id": 2,
               "steps": 3
+            }
+          }
+        }
+        """).right.get)
+    }
+
+    "list more workflows after inserting" in {
+      val query =
+        graphql"""
+         query listWorkflows {
+           workflows {
+             id
+           }
+         }
+      """
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "workflows": [
+              {
+                "id": 0
+              },
+              {
+                "id": 1
+              },
+              {
+                "id": 2
+              }
+            ]
+          }
+        }
+        """).right.get)
+    }
+
+    "insert a workflow Execution" in {
+      val query =
+        graphql"""
+        mutation insertWorkflowExecution {
+          addWorkflowExecution(id:2, workflow:2, stepIndex: 0, timestamp: "2018-09-13 22:43:38.776") {
+            id,
+            workflow
+          }
+        }
+      """
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "addWorkflowExecution": {
+              "id": 2,
+              "workflow": 2
+            }
+          }
+        }
+        """).right.get)
+
+      val query2 =
+        graphql"""
+         query getAWorkflowExecution {
+           workflowExecution(id: 2) {
+             id,
+             workflow
+           }
+         }
+      """
+
+      executeQuery(query2) should be (parse(
+        """
+        {
+          "data": {
+            "workflowExecution": {
+              "id": 2,
+              "workflow": 2
             }
           }
         }
