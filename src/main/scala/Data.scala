@@ -31,15 +31,27 @@ class TrayRepo {
     workflows.find(c => c.id == id)
   }
 
-  def addWorkflowExecution(
-    id: Int,
-    workflow: Int,
-    stepIndex: Int,
-    timestamp: String)
+  def addWorkflowExecution(workflow: Int)
   : Option[WorkflowExecution] = {
-    val we = WorkflowExecution(id, workflow, stepIndex, Timestamp.valueOf(timestamp))
+    val we = WorkflowExecution(workflowExecutions.length, workflow, 0, Timestamp.valueOf(LocalDateTime.now))
     workflowExecutions = workflowExecutions :+ we
-    workflowExecutions.find(c => c.id == id)
+    Some(workflowExecutions(we.id))
+  }
+
+  def incrementWorkflowExecution(id: Int)
+  : Option[WorkflowExecution] = {
+    var we = workflowExecutions(id)
+    val w = workflows(we.workflow)
+    if (w.steps > we.stepIndex + 1) {
+      workflowExecutions = workflowExecutions.map( el =>
+        if (el.id == id) {
+          el.copy(stepIndex = (el.stepIndex + 1), timestamp = Timestamp.valueOf(LocalDateTime.now))
+        } else {
+          el
+        }
+      )
+    }
+    Some(workflowExecutions(id))
   }
 }
 

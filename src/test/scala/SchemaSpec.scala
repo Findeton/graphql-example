@@ -201,9 +201,10 @@ class SchemaSpec extends WordSpec with Matchers {
       val query =
         graphql"""
         mutation insertWorkflowExecution {
-          addWorkflowExecution(id:2, workflow:2, stepIndex: 0, timestamp: "2018-09-13 22:43:38.776") {
+          addWorkflowExecution(workflow: 2) {
             id,
-            workflow
+            workflow,
+            stepIndex
           }
         }
       """
@@ -214,7 +215,8 @@ class SchemaSpec extends WordSpec with Matchers {
           "data": {
             "addWorkflowExecution": {
               "id": 2,
-              "workflow": 2
+              "workflow": 2,
+              "stepIndex": 0
             }
           }
         }
@@ -225,7 +227,8 @@ class SchemaSpec extends WordSpec with Matchers {
          query getAWorkflowExecution {
            workflowExecution(id: 2) {
              id,
-             workflow
+             workflow,
+             stepIndex
            }
          }
       """
@@ -236,7 +239,60 @@ class SchemaSpec extends WordSpec with Matchers {
           "data": {
             "workflowExecution": {
               "id": 2,
-              "workflow": 2
+              "workflow": 2,
+              "stepIndex": 0
+            }
+          }
+        }
+        """).right.get)
+    }
+
+    "increment a workflow Execution step" in {
+      val query =
+        graphql"""
+        mutation insertWorkflowExecution {
+          incrementWorkflowExecution(id: 2) {
+            id,
+            workflow,
+            stepIndex
+          }
+        }
+      """
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "incrementWorkflowExecution": {
+              "id": 2,
+              "workflow": 2,
+              "stepIndex": 1
+            }
+          }
+        }
+        """).right.get)
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "incrementWorkflowExecution": {
+              "id": 2,
+              "workflow": 2,
+              "stepIndex": 2
+            }
+          }
+        }
+        """).right.get)
+
+      executeQuery(query) should be (parse(
+        """
+        {
+          "data": {
+            "incrementWorkflowExecution": {
+              "id": 2,
+              "workflow": 2,
+              "stepIndex": 2
             }
           }
         }

@@ -38,7 +38,7 @@ this gives back the requested workflow:
 ```json
 {
   "data": {
-    "workflow":{ 
+    "workflow":{
       "id":0,
       "steps":1
     }

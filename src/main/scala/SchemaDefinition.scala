@@ -72,8 +72,6 @@ object SchemaDefinition {
   val OffsetArg = Argument("offset", OptionInputType(IntType), defaultValue = 0)
 
   val WorkflowArg = Argument("workflow", IntType, description = "id of the workflow")
-  val StepIndex = Argument("stepIndex", IntType, description = "step index of the workflow execution")
-  val Timestamp = Argument("timestamp", StringType, description = "timestamp")
 
   val Query = ObjectType(
     "Query", fields[TrayRepo, Unit](
@@ -96,8 +94,11 @@ object SchemaDefinition {
       arguments = ID :: Steps :: Nil,
       resolve = ctx => ctx.ctx.addWorkflow(ctx arg ID, ctx arg Steps)),
     Field("addWorkflowExecution", OptionType(WorkflowExecution),
-      arguments = ID :: WorkflowArg :: StepIndex :: Timestamp :: Nil,
-      resolve = ctx => ctx.ctx.addWorkflowExecution(ctx arg ID, ctx arg WorkflowArg, ctx arg StepIndex, ctx arg Timestamp))
+      arguments = WorkflowArg :: Nil,
+      resolve = ctx => ctx.ctx.addWorkflowExecution(ctx arg WorkflowArg)),
+    Field("incrementWorkflowExecution", OptionType(WorkflowExecution),
+      arguments = ID :: Nil,
+      resolve = ctx => ctx.ctx.incrementWorkflowExecution(ctx arg ID))
   ))
 
   val TrayIoSchema = Schema(Query, Some(MutationType))
